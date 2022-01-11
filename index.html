@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- HTML -->
+    <main>
+        <h1>BYU On Line!</h1>
+
+        <div>
+            <div>
+                Your User Name
+                <input type="text" name="from" id="from">
+                <button name="set" id="set">Set</button>
+            </div>
+        </div>
+
+        <div id="messanger">
+            <div id="outbox">
+                <div>
+                    To
+                    <input type="text" name="to" id="to">
+                </div>
+                <textarea name="message" id="message" cols="30" rows="10"></textarea>
+                <br>
+                <button name="send" id="send">Send</button>
+                <div id="sent_messages"></div>
+            </div>
+            <h3>Messages</h3>
+            <div id="inbox"></div>
+        </div>
+        <div class="loader" id="wait"></div>
+    </main>
+
+    <!-- Firebase -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.2/firebase-analytics.js";
+        import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.6.2/firebase-firestore.js'
+        import test from './index.js'
+        import { addTestData, setUpListner, listenToQuery, sendMessage } from './firestore.js'
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyBzgFsU6tJN0r8qFqQumydnKW3mR8r0cxQ",
+            authDomain: "firestorearea.firebaseapp.com",
+            projectId: "firestorearea",
+            storageBucket: "firestorearea.appspot.com",
+            messagingSenderId: "427335420596",
+            appId: "1:427335420596:web:489fdd6230899c0a0ee5e1",
+            measurementId: "G-TL5MHYM71F"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore()
+
+        // my functions
+
+        const el = (id) => document.getElementById(id)
+        let username = ''
+        let inboxListener
+        let outboxListener
+
+
+        // render methods 
+        function showInbox(data) {
+            let messages = ''
+
+            console.log(data)
+
+            data = data.sort((a, b) => a.time.seconds - b.time.seconds)
+
+            console.log(data)
+
+            for (const item of data) {
+                const newMessage = `<div id='${item.time.seconds}....${item.time.nanoseconds}' class='in-message'>
+                <div class='message-to'> <strong>From:</strong> ${item.time.seconds}</div>
+                <div class='message-to'> <strong>From:</strong> ${item.from}</div>
+                <div class='message-body'>${item.message}</div>
+                </div>`
+
+                messages += newMessage
+            }
+
+            el('inbox').innerHTML = messages
+        }
+
+        function showOutbox(data) {
+            let messages = ''
+
+            data = data.sort((a, b) => a.time.seconds - b.time.seconds)
+
+            console.log(data)
+
+
+            for (const item of data) {
+                const newMessage = `<div id='${item.time.seconds}' class='out-message'>
+                <div class='message-to'> <strong>To:</strong> ${item.to}</div>
+                <div class='message-body'>${item.message}</div>
+                </div>`
+
+                messages += newMessage
+            }
+
+            el('sent_messages').innerHTML = messages
+        }
+
+
+        function addEventListners() {
+            el("send").addEventListener("click", function () {
+                // send logic
+                const to = el("to").value
+                const from = el("from").value
+                const message = el('message').value
+
+                sendMessage(db, to, from, message)
+
+                el('message').value = ''
+
+            });
+
+            el("set").addEventListener("click", function () {
+                // set who the message is from
+                username = el("from").value
+
+                if (username) {
+
+                    // hinde the messanger and show a spinner 
+                    el('wait').style.display = 'block'
+                    setTimeout(() => {
+                        el('wait').style.display = 'none'
+                        el('messanger').style.display = 'block'
+                    }, 2000)
+
+                    // un subscribe if nessicary
+                    if (outboxListener?.unsubscribe) {
+                        outboxListener.unsubscribe()
+                    }
+                    if (inboxListener) {
+                        inboxListener.unsubscribe()
+                    }
+
+                    // subscribe
+                    outboxListener = listenToQuery(db, "from", username, showOutbox)
+                    inboxListener = listenToQuery(db, "to", username, showInbox)
+                }
+
+
+
+            });
+        }
+
+        function init() {
+            el('messanger').style.display = 'none'
+            el('wait').style.display = 'none'
+
+            addEventListners()
+        }
+
+        init()
+
+    </script>
+</body>
+
+</html>
