@@ -22,21 +22,31 @@
             </div>
         </div>
 
-        <div id="messanger">
-            <div id="outbox">
+        <div id="messanger" class="">
+            <div id="message_input" class="center">
                 <div>
                     To
                     <input type="text" name="to" id="to">
                 </div>
-                <textarea name="message" id="message" cols="30" rows="10"></textarea>
+                <br>
+                <br>
+                <textarea name="message" id="message" cols="60" rows="10"></textarea>
                 <br>
                 <button name="send" id="send">Send</button>
-                <div id="sent_messages"></div>
             </div>
-            <h3>Messages</h3>
-            <div id="inbox"></div>
+            <h3 class="center">Messages</h3>
+            <div class="flex-container">
+                <div class="flex-child">
+                    <h4>Outbox</h4>
+                    <div id="sent_messages"></div>
+                </div>
+                <div class="flex-child">
+                    <h4>Inbox</h4>
+                    <div id="inbox"></div>
+                </div>
+            </div>
         </div>
-        <div class="loader" id="wait"></div>
+        <div class="loader center" id="wait"></div>
     </main>
 
     <!-- Firebase -->
@@ -81,13 +91,13 @@
 
             console.log(data)
 
-            data = data.sort((a, b) => a.time.seconds - b.time.seconds)
+            data = data.sort((a, b) => a.time.seconds - b.time.seconds).reverse()
 
             console.log(data)
 
             for (const item of data) {
-                const newMessage = `<div id='${item.time.seconds}....${item.time.nanoseconds}' class='in-message'>
-                <div class='message-to'> <strong>From:</strong> ${item.time.seconds}</div>
+                const newMessage = `<div id='${item.time.seconds}....${item.time.nanoseconds}' class='message in-message'>
+                <div class='message-to'> <strong>Time:</strong> ${new Date(item.time.seconds*1000)}</div>
                 <div class='message-to'> <strong>From:</strong> ${item.from}</div>
                 <div class='message-body'>${item.message}</div>
                 </div>`
@@ -101,13 +111,14 @@
         function showOutbox(data) {
             let messages = ''
 
-            data = data.sort((a, b) => a.time.seconds - b.time.seconds)
+            data = data.sort((a, b) => a.time.seconds - b.time.seconds).reverse()
 
             console.log(data)
 
 
             for (const item of data) {
-                const newMessage = `<div id='${item.time.seconds}' class='out-message'>
+                const newMessage = `<div id='${item.time.seconds}' class='message out-message'>
+                <div class='message-to'> <strong>Time:</strong> ${ new Date(item.time.seconds *1000)}</div>
                 <div class='message-to'> <strong>To:</strong> ${item.to}</div>
                 <div class='message-body'>${item.message}</div>
                 </div>`
