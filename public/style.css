@@ -38,3 +38,24 @@
 .center {
   text-align: center;
 }
+
+/* Message Styles */
+
+.message {
+  margin: 0.5rem;
+  border-radius: 5px;
+}
+
+
+.in-message {
+  background-color: #66bcf5;
+}
+
+.out-message {
+  background-color: #bbbbbb;
+}
+
+.message-body{
+  padding: 5px;
+  padding-left: 10px;
+}

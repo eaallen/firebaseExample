@@ -97,9 +97,9 @@
 
             for (const item of data) {
                 const newMessage = `<div id='${item.time.seconds}....${item.time.nanoseconds}' class='message in-message'>
-                <div class='message-to'> <strong>Time:</strong> ${new Date(item.time.seconds*1000)}</div>
-                <div class='message-to'> <strong>From:</strong> ${item.from}</div>
-                <div class='message-body'>${item.message}</div>
+                    <div class='message-to'> <strong>Time:</strong> ${new Date(item.time.seconds*1000).toLocaleString('en-US')}</div>
+                    <div class='message-to'> <strong>From:</strong> ${item.from}</div>
+                    <div class='message-body'>${item.message}</div>
                 </div>`
 
                 messages += newMessage
@@ -109,6 +109,7 @@
         }
 
         function showOutbox(data) {
+            console.log('WE are about to show the outbox')
             let messages = ''
 
             data = data.sort((a, b) => a.time.seconds - b.time.seconds).reverse()
@@ -118,9 +119,9 @@
 
             for (const item of data) {
                 const newMessage = `<div id='${item.time.seconds}' class='message out-message'>
-                <div class='message-to'> <strong>Time:</strong> ${ new Date(item.time.seconds *1000)}</div>
-                <div class='message-to'> <strong>To:</strong> ${item.to}</div>
-                <div class='message-body'>${item.message}</div>
+                    <div class='message-to'> <strong>Time:</strong> ${ new Date(item.time.seconds *1000).toLocaleString('en-US')}</div>
+                    <div class='message-to'> <strong>To:</strong> ${item.to}</div>
+                    <div class='message-body'>${item.message}</div>
                 </div>`
 
                 messages += newMessage
@@ -151,6 +152,7 @@
 
                     // hinde the messanger and show a spinner 
                     el('wait').style.display = 'block'
+                        el('messanger').style.display = 'none'
                     setTimeout(() => {
                         el('wait').style.display = 'none'
                         el('messanger').style.display = 'block'
