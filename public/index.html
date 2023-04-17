@@ -162,7 +162,7 @@
                     if (outboxListener?.unsubscribe) {
                         outboxListener.unsubscribe()
                     }
-                    if (inboxListener) {
+                    if (inboxListener?.unsubscribe) {
                         inboxListener.unsubscribe()
                     }
 
